@@ -1,0 +1,104 @@
+#CS101 Lab
+#Program 3
+#Kate Rowley
+#kerdn5@umsystem.edu
+
+#Problem: 
+#       In this program you are going to simulate a slot machine in Pierson Hall.  The slot 
+#   machine has 3 reels and each reel will have numbers ranging from 1 to 10.  The user 
+#   can choose how many chips they start out with.  They are allowed to wager between 1 
+#   to the amount of bank they currently have on each spin.  If they match 3 numbers, 
+#   they will win 10 times their wager.  If they match 2 numbers they will win 3 times 
+#   their wager.
+
+#Algorithm:
+#   1. define all the functions
+#   2. ask player for their bank amount
+#   3. set up count variable
+#   4. call functions and get reel numbers between 1-10
+#   5. output results
+#   6. repeat until bank = 0
+#   7. output final statemnts when bank = 0 
+#   8. ask user to play again
+
+import random
+
+def play_again() -> bool:
+    playing = input('Do you want to play again?:').lower()
+    while playing != 'y' and playing != 'yes' and playing != 'n' and playing != 'no':
+        print('You must enter Y/YES/N/NO to continue')
+        playing = input('Do you want to play again?:').lower()
+    if playing == 'y' or playing == 'yes':
+        return True
+    elif playing == 'n' or playing == 'no':
+        return False
+
+def get_bank() -> int:
+    bank = int(input('How many chips would you like to start with?:'))
+    while 0 > bank > 101:
+        if bank < 0:
+            print('Too low a value, you can only choose 1 - 100 chips')
+        else:
+            print('Too high a value, you can only choose 1 - 100 chips')
+        bank = int(input('How many chips would you like to start with?:'))
+    return bank
+
+def get_wager(bank : int):
+    wager = int(input('How many chips do you want to wager?:'))
+    while wager < 1 or wager > bank:
+        if wager < 1:
+            print('The amount must be greater than zero')
+        elif wager > bank:
+            print('The amount cannot be greater than how much you have.')
+        wager = int(input('How many chips do you want to wager?:'))
+    return wager
+
+def get_slot_results() -> tuple:
+    reela = random.randint(1,10)
+    reelb = random.randint(1,10)
+    reelc = random.randint(1,10)
+    return reela, reelb, reelc
+
+def get_matches(reela, reelb, reelc) -> int:
+    if reela == reelb == reelc:
+        return 3
+    elif reela == reelb or reelc == reela or reelb == reelc:
+        return 2
+    else:
+        return 0
+
+def get_payout(wager,matches):
+    if matches == 3:
+        payout = wager * 10
+    elif matches == 2:
+        payout = wager * 3
+    else:
+        payout = wager * (-1)
+    return payout
+
+if __name__ == "__main__":
+    playing = True
+    while playing:
+        bank = get_bank()
+        max = bank
+        orig_bank = bank
+        spin = 0
+        while bank > 0:  # Replace with condition for if they still have money.
+            wager = get_wager(bank)
+            reel1, reel2, reel3 = get_slot_results()
+            matches = get_matches(reel1, reel2, reel3)
+            payout = get_payout(wager, matches)
+            bank = bank + payout
+            if bank > max:
+                max = bank
+
+            print("Your spin", reel1, reel2, reel3)
+            print("You matched", matches, "reels")
+            print("You won/lost", payout)
+            print("Current bank", bank)
+            print()
+            spin += 1
+
+        print('You lost all {} in {} spins'.format(orig_bank,spin)) 
+        print('The most chips you had was',max)
+        playing = play_again()
